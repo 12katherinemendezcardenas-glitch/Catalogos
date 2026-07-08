@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embobinados del Guaviare - Catálogos de Productos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blueDark: '#1b3c87', // Azul Profundo
+                            blueLight: '#32a3df', // Azul Claro
+                            orange: '#d94b1a', // Naranja Motosierra
+                            grayDark: '#1e293b',
+                            grayLight: '#f8fafc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- HEADER / IDENTIDAD -->
+    <header class="bg-gradient-to-r from-brand-blueDark via-slate-900 to-brand-blueDark text-white shadow-xl border-b-4 border-brand-orange">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- Logotipo del Taller -->
+            <div class="flex items-center gap-4">
+                <div class="bg-white p-2.5 rounded-xl shadow-lg border border-brand-orange flex items-center justify-center">
+                    <svg class="w-14 h-7 text-brand-orange" viewBox="0 0 100 40" fill="currentColor">
+                        <!-- Carcasa Motosierra -->
+                        <path d="M5 10 h18 a5 5 0 0 1 5 5 v15 a5 5 0 0 1 -5 5 h-18 a5 5 0 0 1 -5 -5 v-15 a5 5 0 0 1 5 -5 z" fill="#d94b1a" />
+                        <!-- Manija superior -->
+                        <path d="M8 10 q -5 -8 5 -10 h 10 q 5 0 3 10" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round" />
+                        <!-- Espada de corte -->
+                        <path d="M28 18 h55 q 5 0 5 4 q 0 4 -5 4 h-55" fill="#f3f4f6" stroke="#374151" stroke-width="2" />
+                        <!-- Dientes de cadena -->
+                        <path d="M28 17 l3 -2 l3 2 l3 -2 l3 2 l3 -2 l3 2 l3 -2 l3 2 l3 -2 l3 2 l3 -2 l3 2 l3 -2 l3 2 l3 -2 l3 2 l3 -2 l3 2" fill="none" stroke="#374151" stroke-width="1.5" />
+                        <!-- Detalles del Motor -->
+                        <rect x="7" y="15" width="4" height="10" rx="1" fill="#fff" opacity="0.8" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black tracking-tight flex items-center gap-2">
+                        <span>EMBOBINADOS</span>
+                        <span class="text-brand-orange text-[10px] bg-white px-2 py-0.5 rounded-full font-extrabold self-center shadow">DEL GUAVIARE</span>
+                    </h1>
+                    <p class="text-[11px] text-brand-blueLight font-semibold tracking-wider uppercase">Portal de Catálogos de Productos & Consulta • San José del Guaviare</p>
+                </div>
+            </div>
+
+            <!-- Resumen de Archivos Cargados -->
+            <div class="flex items-center gap-3 bg-slate-800/80 px-4 py-2 rounded-xl border border-slate-700/80 text-xs">
+                <span class="text-slate-300 font-medium">Catálogos en Memoria:</span>
+                <span id="loaded-count-badge" class="bg-brand-orange text-white font-bold px-2 py-1 rounded-md">0 / 22 Vinculados</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICACIONES TOAST -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl border-l-4 border-brand-orange flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-brand-orange text-lg"></i>
+        <span id="toast-message" class="text-xs font-semibold">Operación realizada con éxito</span>
+    </div>
+
+    <!-- CUSTOM CONFIRMATION MODAL -->
+    <div id="custom-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform scale-95 transition-all">
+            <div class="p-6 text-center space-y-4">
+                <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-extrabold text-slate-850 text-sm" id="confirm-title">¿Confirmar Acción?</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed" id="confirm-message">Esta acción no se puede deshacer de forma automática.</p>
+                </div>
+                <div class="flex gap-2.5 pt-2">
+                    <button id="confirm-cancel-btn" class="flex-1 py-2 text-xs font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">Cancelar</button>
+                    <button id="confirm-ok-btn" class="flex-1 py-2 text-xs font-bold text-white bg-brand-orange hover:bg-brand-orange/95 rounded-xl transition-colors">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE SPACE -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+
+        <!-- GUÍA EXPLICATIVA INICIAL -->
+        <div class="bg-gradient-to-r from-blue-50 to-brand-blueLight/10 p-5 rounded-2xl border border-brand-blueLight/30 flex flex-col md:flex-row gap-4 items-start md:items-center">
+            <div class="bg-brand-blueDark text-white p-3.5 rounded-xl flex items-center justify-center shadow-md">
+                <i class="fa-solid fa-circle-info text-2xl"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="font-bold text-slate-800 text-sm">💡 Tu Mega Portal de Productos (22 Catálogos)</h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Hemos ordenado alfabéticamente de la <strong>A a la Z</strong> las 22 listas de productos de tus proveedores. 
+                    <strong>Asocia los PDFs descargados de tu WhatsApp una sola vez</strong> haciendo click en <strong>"Asociar PDF"</strong>. 
+                    Si subes esta app a GitHub Pages junto con tus archivos PDF, los catálogos se abrirán de forma <strong>150% automática e instantánea</strong> al hacer clic en "Ver PDF".
+                </p>
+            </div>
+        </div>
+
+        <!-- BARRA DE BÚSQUEDA Y CONTROLES -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <div class="relative w-full sm:max-w-md">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="catalog-search" oninput="filterCatalogs()" placeholder="Buscar catálogo por producto, marca o empresa..." 
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-blueDark focus:bg-white focus:outline-none transition-all shadow-sm">
+            </div>
+            <div class="flex gap-2 text-xs font-semibold text-slate-500">
+                <span>Orden: </span>
+                <span class="text-brand-orange font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-down-a-z"></i> Alfabético (A-Z)
+                </span>
+            </div>
+        </div>
+
+        <!-- CUADRÍCULA DE ARCHIVOS EN ORDEN ALFABÉTICO (GRID DE 3 COLUMNAS) -->
+        <div id="catalogs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Cargado por JS -->
+        </div>
+
+    </main>
+
+    <!-- VISOR DE PDF Y HERRAMIENTAS SPLIT SCREEN -->
+    <div id="pdf-viewer-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex flex-col">
+        <!-- Barra de Control Superior -->
+        <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-brand-orange rounded-lg">
+                    <i class="fa-solid fa-file-pdf text-white"></i>
+                </div>
+                <div>
+                    <h2 class="font-extrabold text-sm text-slate-100" id="viewer-title">Visualizando Catálogo</h2>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest" id="viewer-subtitle">Embobinados del Guaviare</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="closePDFViewer()" class="px-4 py-2 text-xs font-bold bg-slate-800 hover:bg-red-600 text-slate-200 hover:text-white rounded-lg transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-xmark"></i> Cerrar Visor
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel Central (Split Screen) -->
+        <div class="flex-grow flex flex-col lg:flex-row overflow-hidden bg-slate-950">
+            
+            <!-- Izquierda: Lector del PDF -->
+            <div class="w-full lg:w-3/5 h-1/2 lg:h-full border-r border-slate-800 relative flex flex-col bg-slate-900">
+                <div id="pdf-embed-container" class="w-full h-full">
+                    <!-- El iframe o visor de PDF se inserta aquí -->
+                </div>
+                <div id="pdf-fallback-loader" class="absolute inset-0 bg-slate-900/95 flex flex-col items-center justify-center p-8 text-center hidden">
+                    <i class="fa-solid fa-file-pdf text-6xl text-slate-600 mb-4"></i>
+                    <h3 class="text-white font-bold text-base mb-2">Asocia el archivo PDF para verlo</h3>
+                    <p class="text-xs text-slate-400 max-w-sm mb-4 leading-relaxed">
+                        Para abrir este visor localmente, selecciona el archivo <span id="fallback-filename" class="text-brand-orange font-bold font-mono"></span> desde la carpeta donde lo descargaste.
+                    </p>
+                    <input type="file" id="fallback-file-input" class="hidden" accept="application/pdf" onchange="handleFallbackUpload(event)">
+                    <button onclick="triggerFallbackInput()" class="px-5 py-2.5 bg-brand-orange hover:bg-brand-orange/95 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open"></i> Elegir Archivo PDF de mi PC
+                    </button>
+                </div>
+            </div>
+
+            <!-- Derecha: Buscador de Precios Rápido & Calculadora de Repuestos -->
+            <div class="w-full lg:w-2/5 h-1/2 lg:h-full bg-slate-900 flex flex-col">
+                <div class="p-4 border-b border-slate-800 bg-slate-900/60 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-brand-blueLight"></i>
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider">Productos de Referencia e Importación</h3>
+                    </div>
+                    <span class="text-[10px] bg-brand-orange/10 text-brand-orange px-2 py-0.5 rounded font-extrabold uppercase">Base local</span>
+                </div>
+
+                <!-- Buscador de la lista de precios integrada -->
+                <div class="p-4 bg-slate-950 border-b border-slate-800">
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="item-search" oninput="searchCatalogItems()" placeholder="Filtrar repuestos, medidas o códigos en este catálogo..." 
+                            class="w-full pl-9 pr-4 py-2 bg-slate-800 text-white placeholder-slate-400 rounded-lg text-xs border border-slate-700 focus:outline-none focus:ring-1 focus:ring-brand-blueLight">
+                    </div>
+                </div>
+
+                <!-- Resultados de búsqueda rápidos -->
+                <div class="flex-grow overflow-y-auto p-4 space-y-2.5" id="viewer-items-list">
+                    <!-- Cargado dinámicamente -->
+                </div>
+
+                <!-- Calculadora / Cotizador Temporal en la parte inferior -->
+                <div class="p-4 bg-slate-950 border-t border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-400">Total Precios Seleccionados:</span>
+                        <span id="quick-total" class="text-sm font-black text-brand-orange">$0 COP</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="clearQuickCalculator()" class="py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[11px] rounded-lg transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
+                        </button>
+                        <button onclick="copyQuickList()" class="py-2 bg-brand-blueDark hover:bg-brand-blueDark/95 text-white font-bold text-[11px] rounded-lg transition-colors flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-copy"></i> Copiar a WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // LISTADO DE CATÁLOGOS - 22 CATÁLOGOS ORDENADOS ALFABÉTICAMENTE CON EMPRESAS Y FILENAMES CORRECTOS
+        const CATALOGS_DATABASE = [
+            {
+                id: "cap-duales",
+                filename: "CAP DUALES EM 370-440 MAR 2026.pdf",
+                title: "Lista de Productos Capacitadores Duales EM",
+                company: "Electromecánicos EM",
+                category: "Capacitadores",
+                year: "2026",
+                description: "Lista de capacitores duales para arranque y marcha de motores eléctricos y sistemas de aire acondicionado.",
+                color: "orange",
+                items: [
+                    { name: "Capacitor Dual EM 30+5 uF x 370-440V", spec: "Cilíndrico Aluminio", price: 42000 },
+                    { name: "Capacitor Dual EM 35+5 uF x 370-440V", spec: "Cilíndrico Aluminio", price: 46000 },
+                    { name: "Capacitor Dual EM 40+5 uF x 370-440V", spec: "Cilíndrico Aluminio", price: 51000 },
+                    { name: "Capacitor Dual EM 55+5 uF x 370-440V", spec: "Cilíndrico Aluminio", price: 66000 },
+                    { name: "Capacitor Dual EM 60+5 uF x 370-440V", spec: "Cilíndrico Aluminio", price: 72000 }
+                ]
+            },
+            {
+                id: "cap-em",
+                filename: "CAP EM P.D 2025-2026.pdf",
+                title: "Lista de Productos Capacitadores EM P.D.",
+                company: "P.D. Representaciones",
+                category: "Capacitadores",
+                year: "2025-2026",
+                description: "Precios oficiales de capacitores de marcha y de arranque para motores monofásicos de inducción.",
+                color: "blue",
+                items: [
+                    { name: "Capacitor de Marcha EM 15 uF x 440VAC", spec: "Con tornillo / Plástico", price: 18000 },
+                    { name: "Capacitor de Marcha EM 20 uF x 440VAC", spec: "Con tornillo / Plástico", price: 21000 },
+                    { name: "Capacitor de Marcha EM 25 uF x 440VAC", spec: "Con tornillo / Plástico", price: 24000 },
+                    { name: "Capacitor de Marcha EM 30 uF x 440VAC", spec: "Con tornillo / Plástico", price: 28000 },
+                    { name: "Capacitor de Marcha EM 40 uF x 440VAC", spec: "Con tornillo / Plástico", price: 34000 },
+                    { name: "Capacitor de Arranque EM 189-227 uF x 110V", spec: "Negro Baquelita", price: 16000 }
+                ]
+            },
+            {
+                id: "aquatrece",
+                filename: "Lista de Precios Aquatrece Colombia 2025.pdf",
+                title: "Lista de Productos Aquatrece Colombia",
+                company: "Aquatrece Colombia S.A.S.",
+                category: "Sistemas de Bombeo",
+                year: "2025",
+                description: "Equipos de bombeo de agua, presurizadores, tanques hidroneumáticos y controladores automáticos de flujo.",
+                color: "blueLight",
+                items: [
+                    { name: "Motobomba Periférica Aquatrece 0.5 HP", spec: "Monofásica 110V", price: 198000 },
+                    { name: "Motobomba Centrífuga Aquatrece 1.0 HP", spec: "Monofásica 110/220V", price: 345000 },
+                    { name: "Control Automático de Presión (Presscontrol)", spec: "Aquatrece original", price: 125000 },
+                    { name: "Tanque Hidroneumático de Membrana 24L", spec: "Acero / Conexión 1\"", price: 210000 },
+                    { name: "Presostato Square D original FSG2", spec: "Rango de 20-40 o 30-50 PSI", price: 85000 }
+                ]
+            },
+            {
+                id: "lista-barnes",
+                filename: "Lista de Precios Barnes.pdf",
+                title: "Lista de Productos Barnes",
+                company: "Barnes de Colombia S.A.S.",
+                category: "Sistemas de Bombeo",
+                year: "2025-2026",
+                description: "Bombas centrífugas, autocebantes, sumergibles de achique y de presión de la firma internacional Barnes.",
+                color: "slate",
+                items: [
+                    { name: "Motobomba Autocebante Barnes 2x2", spec: "Gasolina - 6.5 HP - Caudal", price: 1150000 },
+                    { name: "Bomba Centrífuga Barnes IA-1", spec: "1.0 HP - Monofásica - Hierro", price: 890000 },
+                    { name: "Bomba Sumergible Barnes 1.0 HP", spec: "Para aguas negras - Monofásica", price: 1450000 },
+                    { name: "Motobomba Alta Presión Barnes 3x3", spec: "Diésel - 10 HP - Con chasis", price: 4850000 }
+                ]
+            },
+            {
+                id: "lista-cosostenible",
+                filename: "Lista de Precios CoSostenible Energia Solar.pdf",
+                title: "Lista de Productos CoSostenible Energía Solar",
+                company: "CoSostenible S.A.S.",
+                category: "Energía Solar y Renovables",
+                year: "2026",
+                description: "Paneles solares, inversores híbridos, controladores y baterías de ciclo profundo para campos del Guaviare.",
+                color: "emerald",
+                items: [
+                    { name: "Panel Solar Monocristalino CoSostenible 450W", spec: "Células de alta eficiencia", price: 580000 },
+                    { name: "Inversor Híbrido Solar CoSostenible 3kW", spec: "Salida 110V/220V - Entrada 24V", price: 2450000 },
+                    { name: "Controlador de Carga Solar MPPT 60A", spec: "Multivoltaje 12V/24V/48V", price: 650000 },
+                    { name: "Batería de Litio LiFePO4 CoSostenible 100Ah", spec: "Ciclo profundo - 24V", price: 4800000 }
+                ]
+            },
+            {
+                id: "lista-consorcio",
+                filename: "Lista Productos_ 2024.pdf",
+                title: "Lista de Productos Consorcio",
+                company: "Consorcio Industrial S.A.S.",
+                category: "Equipos & Motores Consorcio",
+                year: "2024",
+                description: "Motores a gasolina Kohler y Warrior, electrobombas Lepono, plantas eléctricas portátiles e industriales.",
+                color: "slate",
+                items: [
+                    { name: "SH265-0011 - Motor a Gasolina KOHLER", spec: "6.5 HP - 196 cc - Cuña 3/4\"", price: 1186000 },
+                    { name: "CH270-3157 - Motor a Gasolina KOHLER", spec: "7.0 HP - 208 cc - Cuña 20mm", price: 1649000 },
+                    { name: "FC168FB-3/4C - Motor Gasolina WARRIOR PREMIUM", spec: "6.5 HP - 196 cc - Cuña 3/4\"", price: 631000 },
+                    { name: "FC188F - Motor Gasolina WARRIOR PREMIUM", spec: "13 HP - 389 cc - Rosca/Cuña 1\"", price: 1311000 },
+                    { name: "APM37 - Electrobomba Periférica LEPONO", spec: "0.5 HP - 110V", price: 259000 },
+                    { name: "APM75 - Electrobomba Periférica LEPONO", spec: "1.0 HP - 110/220V", price: 512000 },
+                    { name: "ACM75 - Electrobomba Centrífuga LEPONO", spec: "1.0 HP - 110/220V", price: 703000 },
+                    { name: "ACM150 - Electrobomba Centrífuga LEPONO", spec: "2.0 HP - 110/220V", price: 1440000 }
+                ]
+            },
+            {
+                id: "lista-durespo",
+                filename: "Lista de Precios Durespo.pdf",
+                title: "Lista de Productos Durespo",
+                company: "Durespo S.A.",
+                category: "Agro & Limpieza Industrial",
+                year: "2025",
+                description: "Hidrolavadoras profesionales de alta presión, maquinaria agrícola, motobombas y repuestos Husqvarna.",
+                color: "teal",
+                items: [
+                    { name: "Hidrolavadora Industrial Durespo", spec: "2500 PSI - Motor Eléctrico 5 HP", price: 2850000 },
+                    { name: "Motosierra Husqvarna 125 Profesional", spec: "Espada 16\" - Ligera para fincas", price: 1100000 },
+                    { name: "Guadañadora Husqvarna 143R-II", spec: "Profesional - 43 cc - Rígida", price: 1980000 }
+                ]
+            },
+            {
+                id: "lista-energia-potencia",
+                filename: "Lista de Precios Energia y Potencia.pdf",
+                title: "Lista de Productos Energía y Potencia",
+                company: "Energía y Potencia S.A.S.",
+                category: "Motores, Generadores y Maquinaria",
+                year: "2025",
+                description: "Motores Honda, plantas eléctricas portátiles, sistemas de aspersión y picadoras de pasto de alto rendimiento.",
+                color: "purple",
+                items: [
+                    { name: "Motor Estacionario Honda GX200", spec: "6.5 HP - Eje de Cuña - Original", price: 1450000 },
+                    { name: "Generador Eléctrico Honda EG1000", spec: "1.0 kW - Monofásico - Portátil", price: 1950000 },
+                    { name: "Motobomba Honda WL20XH Caudal", spec: "Succión y Descarga 2\"x2\" - Gasolina", price: 1250000 }
+                ]
+            },
+            {
+                id: "lista-forte",
+                filename: "catalogo_2025_digital.pdf",
+                title: "Lista de Productos Forte 2025",
+                company: "Global Motor S.A.S.",
+                category: "Maquinaria, Agro & Motores",
+                year: "2025",
+                description: "Guadañadoras, motosierras, picapastos, motores a gasolina y diésel, y motobombas de la prestigiosa marca FORTE.",
+                color: "teal",
+                items: [
+                    { name: "FE43-11 - Guadañadora FORTE de Espalda", spec: "43 cc - 1.3 kW - 2 Tiempos", price: 779000 },
+                    { name: "FR43-11 - Guadañadora FORTE Rígida", spec: "43 cc - 1.3 kW - 2 Tiempos", price: 729000 },
+                    { name: "FM-43R - Guadañadora MITSUBISHI TU43", spec: "43 cc - 1.9 kW - Rígida", price: 1450000 },
+                    { name: "FM5218 - Motosierra FORTE Espada 18\"", spec: "51 cc - 2.0 kW", price: 689000 },
+                    { name: "FM5820 - Motosierra FORTE Espada 20\"", spec: "54.5 cc - 2.4 kW", price: 730000 },
+                    { name: "FM6222 - Motosierra FORTE Espada 22\"", spec: "61.5 cc - 3.0 kW / 4.0 HP", price: 760000 },
+                    { name: "3LD510E-LY3 - Motobomba FORTE Diésel", spec: "Arranque manual - 12 HP - 4\"x3\"", price: 14500000 },
+                    { name: "4LD820E-LY3-C - Motobomba FORTE Diésel", spec: "Arranque eléctrico - 17 HP - 4\"x3\"", price: 17800000 }
+                ]
+            },
+            {
+                id: "lista-grihuar",
+                filename: "Lista de Precios Grihuar.pdf",
+                title: "Lista de Productos Grihuar",
+                company: "Grihuar S.A.S.",
+                category: "Sistemas de Riego e Hidráulica",
+                year: "2025-2026",
+                description: "Accesorios, acoples rápidos, codos, terminales y mangueras para sistemas de riego agrícola.",
+                color: "indigo",
+                items: [
+                    { name: "Aspersor de Impacto Metálico Grihuar 3/4\"", spec: "Rendimiento agrícola circular", price: 45000 },
+                    { name: "Cañón de Riego Agrícola Grihuar 1.1/2\"", spec: "Círculo completo y sectorizado", price: 380000 },
+                    { name: "Válvula Solenoide Eléctrica Grihuar 1\"", spec: "NPT - 24VAC para automatización", price: 115000 }
+                ]
+            },
+            {
+                id: "lista-hidroimportacion",
+                filename: "Lista de Precios Hidroimportacion Colombia.pdf",
+                title: "Lista de Productos Hidroimportación",
+                company: "Hidroimportación Colombia S.A.S.",
+                category: "Sistemas de Bombeo y Presión",
+                year: "2026",
+                description: "Equipos de bombeo sumergibles para pozos profundos, presurizadores residenciales y tanques.",
+                color: "blueLight",
+                items: [
+                    { name: "Bomba Sumergible de Pozo 4\" Hidroimportación", spec: "1.0 HP - Monofásica - Acero Inox", price: 1280000 },
+                    { name: "Control de Presión Electrónico (Presscontrol)", spec: "Rosca 1\" - Encendido automático", price: 11000 }
+                ]
+            },
+            {
+                id: "lista-ihm",
+                filename: "Lista de precios IHM.pdf",
+                title: "Lista de Productos IHM 2026",
+                company: "Ignacio Gómez IHM S.A.S.",
+                category: "Sistemas de Bombeo IHM",
+                year: "2026",
+                description: "Catálogo oficial de Ignacio Gómez IHM. Motores eléctricos Techtop, bombas, equipos contra incendio y eyectores.",
+                color: "orange",
+                items: [
+                    { name: "6504000086 - Motobomba Periférica QB60K", spec: "1/2 HP - 110V - Altura 14.5/40 MCA", price: 269000 },
+                    { name: "6504100086 - Motobomba Periférica QB70", spec: "3/4 HP - 110V - Altura 18/48 MCA", price: 407000 },
+                    { name: "6504200086 - Motobomba Periférica QB80", spec: "1.0 HP - 110V - Altura 23/60 MCA", price: 464000 },
+                    { name: "6523400082 - Motobomba CPm 130", spec: "1/2 HP - Impulsor Bronce - 110V", price: 369000 },
+                    { name: "65235000B2 - Motobomba CPm 146", spec: "3/4 HP - Impulsor Bronce - 110V", price: 440000 },
+                    { name: "65236000B2 - Motobomba CPm 158", spec: "1.0 HP - Impulsor Bronce - 110V", price: 536000 },
+                    { name: "65237000B2 - Motobomba CPm 170", spec: "1.5 HP - Impulsor Bronce - 110V", price: 942000 },
+                    { name: "63887000A2 - Caracol Super 1A-1/2W", spec: "1/2 HP - Rotor Noryl - 115V/230V", price: 903000 },
+                    { name: "63888000A2 - Caracol Super 1A-3/4W", spec: "3/4 HP - Rotor Noryl - 115V/230V", price: 1042000 },
+                    { name: "63889F00A2 - Caracol Super 11/2A-1W RSS", spec: "1.0 HP - Rotor Inoxidable - 115V/230V", price: 1188000 },
+                    { name: "63893E00A2 - Caracol Super 11/2A-1.5MW RSS", spec: "1.5 HP - Rotor Inoxidable - 115V/230V", price: 1282000 },
+                    { name: "63897800A2 - Caracol Super 11/2A-2MW RSS", spec: "2.0 HP - Rotor Inoxidable - 115V/230V", price: 1528000 }
+                ]
+            },
+            {
+                id: "lista-pedrollo",
+                filename: "Lista de Precios Pedrollo.pdf",
+                title: "Lista de Productos Pedrollo",
+                company: "Pedrollo S.p.A. Colombia",
+                category: "Sistemas de Bombeo",
+                year: "2025-2026",
+                description: "Bombas italianas de alta calidad: periféricas PK, centrífugas CP y sumergibles para pozos y agua sucia.",
+                color: "blue",
+                items: [
+                    { name: "Bomba Periférica Pedrollo PKm 60", spec: "0.5 HP - 110V - Silenciosa", price: 340000 },
+                    { name: "Bomba Centrífuga Pedrollo CPm 158", spec: "1.0 HP - 110V - Caudal y presión", price: 690000 },
+                    { name: "Bomba Multietapa Vertical Pedrollo MKm 3/6", spec: "1.5 HP - Alta presión residencial", price: 1850000 }
+                ]
+            },
+            {
+                id: "lista-penagos",
+                filename: "Lista de Precios Penagos.pdf",
+                title: "Lista de Productos Penagos",
+                company: "Penagos Hermanos & Cia S.A.S.",
+                category: "Maquinaria Agrícola",
+                year: "2024-2025",
+                description: "Picadoras de pasto y caña, despulpadoras de café, molinos y maquinaria para el sector del agro.",
+                color: "orange",
+                items: [
+                    { name: "Picadora de Pasto Penagos PP-300", spec: "Sin motor - Producción media", price: 1650000 },
+                    { name: "Despulpadora de Café Penagos #2", spec: "Operación eficiente manual o con polea", price: 1150000 }
+                ]
+            },
+            {
+                id: "lista-power-titan",
+                filename: "Lista de Precios Power Titan.pdf",
+                title: "Lista de Productos Power Titan",
+                company: "Power Titan S.A.S.",
+                category: "Plantas Eléctricas & Fuerza",
+                year: "2026",
+                description: "Generadores eléctricos diésel profesionales, plantas insonorizadas y motores estacionarios para trabajo continuo.",
+                color: "slate",
+                items: [
+                    { name: "Planta Eléctrica Diésel Cabinada 10 kVA", spec: "Arranque eléctrico - Monofásica", price: 12500000 },
+                    { name: "Planta Eléctrica Diésel Cabinada 20 KVA", spec: "Trifásica 127/220V - Insonorizada", price: 18200000 }
+                ]
+            },
+            {
+                id: "lista-stihl",
+                filename: "Lista de Precios Stihl.pdf",
+                title: "Lista de Productos Stihl",
+                company: "Andreas Stihl S.A.",
+                category: "Herramientas de Corte y Agro",
+                year: "2026",
+                description: "Motosierras profesionales, guadañadoras, sopladoras y herramientas de corte forestal y de jardinería STIHL.",
+                color: "orange",
+                items: [
+                    { name: "Motosierra Stihl MS 170", spec: "Espada 14\" - Ideal para podas", price: 850000 },
+                    { name: "Motosierra Stihl MS 250", spec: "Trabajo pesado e intermedio", price: 1550000 },
+                    { name: "Guadañadora Stihl FS 120", spec: "Altamente durable para lotes", price: 1420000 }
+                ]
+            },
+            {
+                id: "lista-trapp",
+                filename: "Lista de Precios Trapp.pdf",
+                title: "Lista de Productos Trapp",
+                company: "Metalúrgica Trapp Ltda.",
+                category: "Jardinería y Picadoras",
+                year: "2025",
+                description: "Cortacéspedes eléctricos y de gasolina, sopladoras y picadoras para el mantenimiento de praderas.",
+                color: "teal",
+                items: [
+                    { name: "Cortacésped Trapp LF-350", spec: "Motor Eléctrico - Bolsa recolectora", price: 980000 },
+                    { name: "Triturador Orgánico Trapp TR-200", spec: "Motor de 1.5 HP - Reducción de podas", price: 1550000 }
+                ]
+            },
+            {
+                id: "k-seal",
+                filename: "PRECIOS ESPECIALES K SEAL 2025.pdf",
+                title: "Lista de Productos K-Seal",
+                company: "K-Seal International Ltd.",
+                category: "Sellos Mecánicos",
+                year: "2025",
+                description: "Línea económica y especial de sellos mecánicos para motobombas domésticas y comerciales.",
+                color: "purple",
+                items: [
+                    { name: "Sello Mecánico K-Seal Tipo 1 - 1/2\"", spec: "Carbón/Cerámica", price: 12500 },
+                    { name: "Sello Mecánico K-Seal Tipo 1 - 5/8\"", spec: "Carbón/Cerámica", price: 14000 },
+                    { name: "Sello Mecánico K-Seal Tipo 1 - 3/4\"", spec: "Carbón/Cerámica", price: 16500 },
+                    { name: "Sello Mecánico K-Seal Tipo 1 - 1\"", spec: "Carbón/Cerámica", price: 21000 }
+                ]
+            },
+            {
+                id: "pac-seal",
+                filename: "PRECIOS SELLOS PAC SEAL OCTUBRE 2025.pdf",
+                title: "Lista de Productos Pac-Seal",
+                company: "Pac-Seal S.A. Industrial",
+                category: "Sellos Mecánicos",
+                year: "2025",
+                description: "Sellos mecánicos premium para bombas de agua de alta presión, químicos y aplicaciones industriales exigentes.",
+                color: "indigo",
+                items: [
+                    { name: "Sello Mecánico Pac-Seal Tipo 6 - 5/8\"", spec: "Alta temperatura / Vitón", price: 34000 },
+                    { name: "Sello Mecánico Pac-Seal Tipo 6 - 3/4\"", spec: "Alta temperatura / Vitón", price: 39500 },
+                    { name: "Sello Mecánico Pac-Seal Tipo 21 - 1\"", spec: "Silicio / Silicio / Vitón", price: 68000 }
+                ]
+            },
+            {
+                id: "refrigeracion",
+                filename: "REFRIGERACION Y ELECTRICOS P.D..pdf",
+                title: "Lista de Productos Refrigeración y Eléctricos P.D.",
+                company: "P.D. Refrigeración y Eléctricos S.A.S.",
+                category: "Refrigeración",
+                year: "2025",
+                description: "Compresores, gases refrigerantes, termostatos, relés y repuestos para aire acondicionado y refrigeración doméstica.",
+                color: "emerald",
+                items: [
+                    { name: "Gas Refrigerante R134a Garrafa 13.6kg", spec: "Dupont / Alta pureza", price: 680000 },
+                    { name: "Gas Refrigerante R410a Garrafa 11.3kg", spec: "Para aires acondicionados", price: 590000 },
+                    { name: "Compresor Embraco 1/5 HP R134a", spec: "Monofásico 110V Doméstico", price: 295000 }
+                ]
+            },
+            {
+                id: "lista-yamaha-motores",
+                filename: "Lista de Productos Yamaha Motores.pdf",
+                title: "Lista de Productos Yamaha Motores",
+                company: "Incolmotores Yamaha S.A.",
+                category: "Motores & Generadores",
+                year: "2026",
+                description: "Motores multipropósito estacionarios y plantas generadoras de energía portátiles Yamaha.",
+                color: "blue",
+                items: [
+                    { name: "Generador Yamaha Inverter EF2000iS", spec: "2.0 kW - Portátil y ultra silencioso", price: 3800000 },
+                    { name: "Generador Yamaha Convencional EF6600", spec: "5.5 kW - Monofásico 110/220V", price: 5400000 },
+                    { name: "Motor Estacionario Yamaha MZ175", spec: "5.5 HP - Eje de cuña - Multipropósito", price: 1450000 },
+                    { name: "Motor Estacionario Yamaha MZ360", spec: "12.0 HP - Eje de cuña - Alta potencia", price: 2950000 },
+                    { name: "Motobomba de Caudal Yamaha YP20G", spec: "Diámetro 2\"x2\" - Motor Yamaha original", price: 2100000 }
+                ]
+            },
+            {
+                id: "lista-yamaha-repuestos",
+                filename: "Lista de Productos Yamaha Repuestos.pdf",
+                title: "Lista de Productos Yamaha Repuestos",
+                company: "Incolmotores Yamaha S.A.",
+                category: "Insumos & Repuestos Yamaha",
+                year: "2026",
+                description: "Repuestos legítimos, bujías, filtros, empaquetaduras y kits de anillos para motores multipropósito y generadores Yamaha.",
+                color: "orange",
+                items: [
+                    { name: "Filtro de Aire Original Yamaha EF2000iS", spec: "Filtro de esponja de alta densidad", price: 65000 },
+                    { name: "Bujía de Encendido NGK BPR4ES Yamaha", spec: "Para generadores y motores de marcha", price: 18000 },
+                    { name: "Carburador Completo Yamaha MZ175", spec: "Repuesto genuino de ensamble directo", price: 320000 },
+                    { name: "Kit de Anillos de Pistón Yamaha MZ360", spec: "Medida estándar de fábrica", price: 145000 },
+                    { name: "Bobina de Encendido Yamaha EF6600", spec: "Sistema de encendido electrónico CDI", price: 280000 }
+                ]
+            }
+        ];
+
+        // ORDENAR ALFABÉTICAMENTE AL INICIAR
+        CATALOGS_DATABASE.sort((a, b) => a.title.localeCompare(b.title));
+
+        // ESTADOS DE LA APLICACIÓN
+        let catalogs = [...CATALOGS_DATABASE];
+        let fileUrls = {}; // { catalogId: objectUrl }
+        let currentActiveCatalogId = null;
+        let quickCalcList = [];
+
+        // AL CARGAR LA PÁGINA
+        window.addEventListener('DOMContentLoaded', () => {
+            // Cargar de localStorage los nombres que ya han sido asociados antes
+            const savedAssociations = localStorage.getItem('eg_pdf_associations');
+            if (savedAssociations) {
+                const list = JSON.parse(savedAssociations);
+                list.forEach(id => {
+                    fileUrls[id] = "associated_previously"; // Marcar como asociado
+                });
+            }
+
+            renderCatalogsGrid();
+            updateStats();
+        });
+
+        // MOSTRAR TOAST NOTIFICACIÓN
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // MOSTRAR MODAL DE CONFIRMACIÓN EN LUGAR DE CONFIRM() NATIVO
+        function showCustomConfirm(title, message, onConfirm) {
+            const modal = document.getElementById('custom-confirm-modal');
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+
+            modal.classList.remove('hidden');
+
+            const cancelBtn = document.getElementById('confirm-cancel-btn');
+            const okBtn = document.getElementById('confirm-ok-btn');
+
+            const cleanUp = () => {
+                modal.classList.add('hidden');
+                cancelBtn.onclick = null;
+                okBtn.onclick = null;
+            };
+
+            cancelBtn.onclick = () => {
+                cleanUp();
+            };
+
+            okBtn.onclick = () => {
+                onConfirm();
+                cleanUp();
+            };
+        }
+
+        // RENDERIZAR LA REJILLA DE CATÁLOGOS EN ORDEN ALFABÉTICO
+        function renderCatalogsGrid(filtered = catalogs) {
+            const grid = document.getElementById('catalogs-grid');
+            grid.innerHTML = '';
+
+            filtered.forEach((cat, index) => {
+                const isLoaded = !!fileUrls[cat.id];
+                
+                // Determinar badge de color
+                let colorClasses = "bg-brand-orange text-white";
+                let borderHover = "hover:border-brand-orange/50";
+                if (cat.color === 'blue') { colorClasses = "bg-brand-blueDark text-white"; borderHover = "hover:border-brand-blueDark/50"; }
+                if (cat.color === 'blueLight') { colorClasses = "bg-brand-blueLight text-white"; borderHover = "hover:border-brand-blueLight/50"; }
+                if (cat.color === 'teal') { colorClasses = "bg-teal-600 text-white"; borderHover = "hover:border-teal-500/50"; }
+                if (cat.color === 'purple') { colorClasses = "bg-purple-600 text-white"; borderHover = "hover:border-purple-500/50"; }
+                if (cat.color === 'indigo') { colorClasses = "bg-indigo-600 text-white"; borderHover = "hover:border-indigo-500/50"; }
+                if (cat.color === 'emerald') { colorClasses = "bg-emerald-600 text-white"; borderHover = "hover:border-emerald-500/50"; }
+                if (cat.color === 'slate') { colorClasses = "bg-slate-700 text-white"; borderHover = "hover:border-slate-500/50"; }
+
+                const card = document.createElement('div');
+                card.className = `bg-white p-5 rounded-2xl shadow-md border border-slate-200/80 ${borderHover} transition-all duration-300 flex flex-col justify-between group transform hover:-translate-y-1`;
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <!-- Icono y Posición en el orden -->
+                        <div class="flex justify-between items-start">
+                            <span class="w-7 h-7 rounded-lg ${colorClasses} flex items-center justify-center font-black text-xs shadow-sm">
+                                ${index + 1}
+                            </span>
+                            <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                                ${cat.year}
+                            </span>
+                        </div>
+
+                        <!-- Info del PDF -->
+                        <div>
+                            <span class="text-[10px] font-bold text-brand-blueDark uppercase tracking-wider block mb-0.5">${cat.category}</span>
+                            <h3 class="font-extrabold text-sm text-slate-800 line-clamp-1 group-hover:text-brand-orange transition-colors">${cat.title}</h3>
+                            
+                            <!-- Información de la Empresa -->
+                            <div class="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                                <i class="fa-solid fa-building text-brand-blueLight text-[10px]"></i>
+                                <span class="text-xs">Empresa: <strong class="text-brand-blueDark font-extrabold">${escapeHTML(cat.company || 'Consorcio')}</strong></span>
+                            </div>
+
+                            <p class="text-[10px] text-slate-400 font-mono mt-2.5 truncate block bg-slate-50/50 p-1 rounded border border-slate-100/50">
+                                <i class="fa-solid fa-file-pdf text-red-500 mr-1"></i>${cat.filename}
+                            </p>
+                            <p class="text-xs text-slate-500 mt-2 line-clamp-2 leading-relaxed">${cat.description}</p>
+                        </div>
+                    </div>
+
+                    <!-- Acciones del Catálogo -->
+                    <div class="mt-5 pt-4 border-t border-slate-100 space-y-2">
+                        <!-- Estado de Carga -->
+                        <div class="flex justify-between items-center text-[10px] font-bold mb-1">
+                            <span class="text-slate-400">Estado:</span>
+                            <span class="${isLoaded ? 'text-emerald-600 bg-emerald-50' : 'text-red-500 bg-red-50'} px-2 py-0.5 rounded flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full ${isLoaded ? 'bg-emerald-600' : 'bg-red-500 animate-pulse'}"></span>
+                                ${isLoaded ? 'PDF Vinculado' : 'Sin vincular'}
+                            </span>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <!-- Botón para asociar el archivo real -->
+                            <label class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] py-2 rounded-lg text-center transition-colors block">
+                                <i class="fa-solid fa-link mr-1 text-slate-500"></i> Asociar PDF
+                                <input type="file" class="hidden" accept="application/pdf" onchange="associatePDF('${cat.id}', event)">
+                            </label>
+
+                            <!-- Botón para abrir el Visor -->
+                            <button onclick="openPDFViewer('${cat.id}')" 
+                                class="py-2 bg-brand-blueDark hover:bg-brand-orange text-white font-extrabold text-[10px] rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-eye"></i> Ver PDF
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // BÚSQUEDA Y FILTRADO DE TARJETAS DE CATÁLOGOS
+        function filterCatalogs() {
+            const query = document.getElementById('catalog-search').value.toLowerCase().trim();
+            if (query === '') {
+                renderCatalogsGrid(catalogs);
+                return;
+            }
+
+            const filtered = catalogs.filter(cat => {
+                return cat.title.toLowerCase().includes(query) || 
+                       cat.filename.toLowerCase().includes(query) || 
+                       cat.category.toLowerCase().includes(query) ||
+                       cat.company.toLowerCase().includes(query) ||
+                       cat.description.toLowerCase().includes(query);
+            });
+            renderCatalogsGrid(filtered);
+        }
+
+        // CONTROL DE ASOCIACIÓN DE ARCHIVO DE FORMA LOCAL (OBJECT URL)
+        function associatePDF(id, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Guardar url temporal para visualización directa en iframe
+            const fileUrl = URL.createObjectURL(file);
+            fileUrls[id] = fileUrl;
+
+            // Guardar persistencia de asociación en localStorage (solo para recordar el estado de vinculado)
+            let savedList = [];
+            const saved = localStorage.getItem('eg_pdf_associations');
+            if (saved) savedList = JSON.parse(saved);
+            if (!savedList.includes(id)) {
+                savedList.push(id);
+                localStorage.setItem('eg_pdf_associations', JSON.stringify(savedList));
+            }
+
+            showToast(`¡Archivo "${file.name}" asociado con éxito para vista instantánea!`);
+            renderCatalogsGrid();
+            updateStats();
+        }
+
+        // ACTUALIZAR ESTADÍSTICA DE CARGA
+        function updateStats() {
+            const total = catalogs.length;
+            const loaded = Object.keys(fileUrls).length;
+            document.getElementById('loaded-count-badge').textContent = `${loaded} de ${total} Vinculados`;
+        }
+
+        // ================= SISTEMA DEL VISOR DE PDF INTEGRADO =================
+
+        function openPDFViewer(id) {
+            const cat = catalogs.find(c => c.id === id);
+            if (!cat) return;
+
+            currentActiveCatalogId = id;
+            document.getElementById('viewer-title').textContent = cat.title;
+            document.getElementById('viewer-subtitle').textContent = `Empresa: ${cat.company} • Archivo: ${cat.filename}`;
+            
+            // Renderizar la tabla de precios del catálogo activo
+            renderCatalogItemsList(cat.items);
+
+            // Cargar el documento PDF si ya se encuentra cargado en memoria
+            const pdfContainer = document.getElementById('pdf-embed-container');
+            const fallbackContainer = document.getElementById('pdf-fallback-loader');
+            
+            pdfContainer.innerHTML = '';
+            
+            // Lógica inteligente de detección de servidor (GitHub Pages) vs local
+            let pdfSource = null;
+            if (fileUrls[id] && fileUrls[id] !== "associated_previously") {
+                // Object URL local activo en esta sesión
+                pdfSource = fileUrls[id];
+            } else if (window.location.protocol.startsWith('http')) {
+                // Si la app está alojada en un servidor web (GitHub Pages), carga el archivo directamente por ruta relativa
+                pdfSource = encodeURIComponent(cat.filename);
+            }
+
+            if (pdfSource) {
+                fallbackContainer.classList.add('hidden');
+                pdfContainer.classList.remove('hidden');
+
+                const embed = document.createElement('iframe');
+                embed.src = pdfSource;
+                embed.className = "w-full h-full border-none rounded-b-xl";
+                pdfContainer.appendChild(embed);
+            } else {
+                // Modo offline sin asociación activa
+                pdfContainer.classList.add('hidden');
+                fallbackContainer.classList.remove('hidden');
+                document.getElementById('fallback-filename').textContent = `"${cat.filename}"`;
+            }
+
+            // Mostrar el visor a pantalla completa
+            document.getElementById('pdf-viewer-overlay').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden'); // Evitar scroll del fondo
+        }
+
+        function closePDFViewer() {
+            document.getElementById('pdf-viewer-overlay').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            currentActiveCatalogId = null;
+        }
+
+        // MANEJO DE SELECCIÓN DE ARCHIVO DESDE LA PANTALLA DE CARGA
+        function triggerFallbackInput() {
+            document.getElementById('fallback-file-input').click();
+        }
+
+        function handleFallbackUpload(event) {
+            const file = event.target.files[0];
+            if (!file || !currentActiveCatalogId) return;
+
+            const fileUrl = URL.createObjectURL(file);
+            fileUrls[currentActiveCatalogId] = fileUrl;
+
+            // Guardar en persistencia
+            let savedList = [];
+            const saved = localStorage.getItem('eg_pdf_associations');
+            if (saved) savedList = JSON.parse(saved);
+            if (!savedList.includes(currentActiveCatalogId)) {
+                savedList.push(currentActiveCatalogId);
+                localStorage.setItem('eg_pdf_associations', JSON.stringify(savedList));
+            }
+
+            showToast(`¡Visor activado para ${file.name}!`);
+            renderCatalogsGrid();
+            updateStats();
+
+            // Re-abrir visor para cargar el frame
+            openPDFViewer(currentActiveCatalogId);
+        }
+
+        // ================= BUSCADOR DE PRECIOS RÁPIDO & CALCULADORA =================
+
+        function renderCatalogItemsList(items) {
+            const container = document.getElementById('viewer-items-list');
+            container.innerHTML = '';
+
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 text-slate-500">
+                        <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-600"></i>
+                        <p class="text-xs">No hay precios de referencia cargados aún.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const isSelected = quickCalcList.some(q => q.name === item.name);
+
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-xl border transition-all duration-150 flex items-center justify-between gap-3 ${
+                    isSelected 
+                        ? 'bg-brand-orange/10 border-brand-orange/40 text-white' 
+                        : 'bg-slate-800/50 border-slate-700/80 text-slate-200 hover:border-slate-600'
+                }`;
+                div.innerHTML = `
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-xs text-white">${escapeHTML(item.name)}</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-gauge-high text-[8px]"></i> Espec: ${escapeHTML(item.spec)}</p>
+                    </div>
+                    <div class="text-right flex items-center gap-3">
+                        <span class="text-xs font-black text-brand-orange">$${formatCOP(item.price)}</span>
+                        <button onclick="toggleQuickItem(${index})" class="p-1.5 rounded-lg transition-all ${
+                            isSelected 
+                                ? 'bg-brand-orange text-white' 
+                                : 'bg-slate-700 text-slate-300 hover:bg-brand-blueLight hover:text-white'
+                        }">
+                            <i class="fa-solid ${isSelected ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function searchCatalogItems() {
+            const query = document.getElementById('item-search').value.toLowerCase().trim();
+            const cat = catalogs.find(c => c.id === currentActiveCatalogId);
+            if (!cat) return;
+
+            if (query === '') {
+                renderCatalogItemsList(cat.items);
+                return;
+            }
+
+            const filteredItems = cat.items.filter(item => {
+                return item.name.toLowerCase().includes(query) || item.spec.toLowerCase().includes(query);
+            });
+
+            renderCatalogItemsList(filteredItems);
+        }
+
+        function toggleQuickItem(index) {
+            const cat = catalogs.find(c => c.id === currentActiveCatalogId);
+            if (!cat) return;
+
+            const item = cat.items[index];
+            const existingIndex = quickCalcList.findIndex(q => q.name === item.name);
+
+            if (existingIndex > -1) {
+                quickCalcList.splice(existingIndex, 1);
+                showToast("Quitado de la cotización rápida");
+            } else {
+                quickCalcList.push(item);
+                showToast("Añadido a la cotización rápida");
+            }
+
+            renderCatalogItemsList(cat.items);
+            calculateQuickTotal();
+        }
+
+        function calculateQuickTotal() {
+            const total = quickCalcList.reduce((acc, curr) => acc + curr.price, 0);
+            document.getElementById('quick-total').textContent = `$${formatCOP(total)} COP`;
+        }
+
+        function clearQuickCalculator() {
+            showCustomConfirm(
+                "¿Reiniciar Calculadora?",
+                "Se limpiará el listado de todos los repuestos agregados en la cotización actual.",
+                () => {
+                    quickCalcList = [];
+                    calculateQuickTotal();
+                    if (currentActiveCatalogId) {
+                        const cat = catalogs.find(c => c.id === currentActiveCatalogId);
+                        if (cat) {
+                            document.getElementById('item-search').value = '';
+                            renderCatalogItemsList(cat.items);
+                        }
+                    }
+                    showToast("Calculadora reiniciada correctamente");
+                }
+            );
+        }
+
+        function copyQuickList() {
+            if (quickCalcList.length === 0) {
+                showToast("¡Agrega repuestos o servicios primero!");
+                return;
+            }
+
+            let text = `⚙️ *EMBOBINADOS DEL GUAVIARE* ⚙️\n`;
+            text += `📍 San José del Guaviare\n`;
+            text += `📄 *Presupuesto de Repuestos & Equipos*\n`;
+            text += `----------------------------------------------\n`;
+            
+            quickCalcList.forEach(item => {
+                text += `• ${item.name} (${item.spec}) - *$${formatCOP(item.price)} COP*\n`;
+            });
+
+            const total = quickCalcList.reduce((acc, curr) => acc + curr.price, 0);
+            text += `----------------------------------------------\n`;
+            text += `💰 *TOTAL ESTIMADO: $${formatCOP(total)} COP*\n\n`;
+            text += `💬 _Cualquier inquietud sobre stock o instalación, no dudes en escribirnos._`;
+
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast("¡Resumen de precios copiado! Listo para pegar en WhatsApp.");
+            } catch (err) {
+                showToast("No se pudo copiar el texto");
+            }
+            document.body.removeChild(temp);
+        }
+
+        // ================= AUXILIARES / FORMATO =================
+
+        function formatCOP(number) {
+            return new Intl.NumberFormat('de-DE').format(number);
+        }
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>
