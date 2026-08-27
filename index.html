@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Embobinados del Guaviare - Catálogos de Productos</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,30 +25,13 @@
     </script>
     <!-- FontAwesome Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- PDF.js Engine Universal para Tablets, Móviles y PC -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .canvas-container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100%;
-            padding: 12px;
-            overflow: auto;
-        }
-        canvas {
-            max-width: 100%;
-            height: auto !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-            border-radius: 6px;
-            background: white;
-        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
@@ -56,8 +39,6 @@
     <!-- HEADER / IDENTIDAD -->
     <header class="bg-gradient-to-r from-brand-blueDark via-slate-900 to-brand-blueDark text-white shadow-xl border-b-4 border-brand-orange sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-            
-            <!-- Logotipo del Taller -->
             <div class="flex items-center gap-3">
                 <div class="bg-white p-2 rounded-xl shadow-lg border border-brand-orange flex items-center justify-center flex-shrink-0">
                     <svg class="w-10 h-6 text-brand-orange" viewBox="0 0 100 40" fill="currentColor">
@@ -76,50 +57,38 @@
                 </div>
             </div>
 
-            <!-- Resumen de Catálogos -->
             <div class="flex items-center gap-2 bg-slate-800/90 px-3 py-1.5 rounded-xl border border-slate-700 text-xs">
                 <i class="fa-solid fa-book-bookmark text-brand-orange"></i>
-                <span class="text-slate-300 font-medium">Catálogos Activos:</span>
-                <span class="bg-brand-orange text-white font-bold px-2 py-0.5 rounded-md text-[11px]">18 Listas de Marcas</span>
+                <span class="text-slate-300 font-medium">Catálogos:</span>
+                <span class="bg-brand-orange text-white font-bold px-2 py-0.5 rounded-md text-[11px]">18 Listas Activas</span>
             </div>
         </div>
     </header>
 
-    <!-- NOTIFICACIONES TOAST -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl border-l-4 border-brand-orange flex items-center gap-3">
-        <i class="fa-solid fa-circle-check text-brand-orange text-base"></i>
-        <span id="toast-message" class="text-xs font-semibold">Operación exitosa</span>
-    </div>
-
     <!-- MAIN INTERACTIVE SPACE -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8 space-y-6">
-        
-        <!-- BARRA DE BÚSQUEDA Y CONTROLES -->
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center">
             <div class="relative w-full sm:max-w-md">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="catalog-search" oninput="filterCatalogs()" placeholder="Buscar catálogo por producto, marca o empresa (ej: Stihl, IHM, Yamaha)..." 
+                <input type="text" id="catalog-search" oninput="filterCatalogs()" placeholder="Buscar catálogo por producto, marca o empresa..." 
                     class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-brand-blueDark focus:bg-white focus:outline-none transition-all shadow-sm">
             </div>
             <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                <span>Ordenamiento: </span>
+                <span>Orden: </span>
                 <span class="text-brand-orange font-bold flex items-center gap-1">
                     <i class="fa-solid fa-arrow-down-a-z"></i> Alfabético (A-Z)
                 </span>
             </div>
         </div>
 
-        <!-- CUADRÍCULA DE TARJETAS DE CATÁLOGOS -->
         <div id="catalogs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <!-- Cargado automáticamente por JS -->
+            <!-- Cargado por JS -->
         </div>
     </main>
 
-    <!-- VISOR UNIVERSAL DE PDF (OPTIMIZADO PARA TABLETS Y TOUCH) -->
+    <!-- VISOR DIRECTO Y UNIVERSAL -->
     <div id="pdf-viewer-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex flex-col">
-        
-        <!-- BARRA SUPERIOR DEL VISOR -->
-        <div class="bg-slate-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 shadow-md">
+        <div class="bg-slate-900 text-white px-4 py-3 flex items-center justify-between border-b border-slate-800 shadow-md">
             <div class="flex items-center gap-2.5 min-w-0">
                 <div class="p-2 bg-brand-orange rounded-lg flex-shrink-0">
                     <i class="fa-solid fa-file-pdf text-white text-sm"></i>
@@ -130,71 +99,18 @@
                 </div>
             </div>
 
-            <!-- CONTROLES DEL VISOR (TABLET FRIENDLY) -->
-            <div class="flex items-center gap-2 flex-wrap">
-                <!-- Botón de apertura directa para emergencias en Tablets -->
-                <a id="btn-direct-link" target="_blank" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-brand-blueLight border border-slate-700 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5">
-                    <i class="fa-solid fa-up-right-from-square"></i>
-                    <span class="hidden sm:inline">Pestaña</span> Nueva
+            <div class="flex items-center gap-2">
+                <a id="btn-direct-link" target="_blank" class="px-3 py-1.5 bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-up-right-from-square"></i> Abrir PDF Directo
                 </a>
-                <!-- Botón de Cerrar -->
-                <button onclick="closePDFViewer()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1">
+                <button onclick="closePDFViewer()" class="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-200 hover:text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1">
                     <i class="fa-solid fa-xmark"></i> Cerrar
                 </button>
             </div>
         </div>
 
-        <!-- BARRA DE HERRAMIENTAS DE PÁGINAS Y ZOOM (PARA TOUCH Y TABLET) -->
-        <div class="bg-slate-900/95 px-4 py-2 flex items-center justify-between text-xs text-white border-b border-slate-800">
-            <div class="flex items-center gap-2">
-                <button onclick="prevPage()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-bold flex items-center gap-1 px-3">
-                    <i class="fa-solid fa-chevron-left"></i> <span class="hidden sm:inline">Anterior</span>
-                </button>
-                <span class="font-bold text-slate-300 px-2 py-1 bg-slate-800/80 rounded-md border border-slate-700 text-[11px]" id="page-indicator">
-                    Página 1 / 1
-                </span>
-                <button onclick="nextPage()" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-bold flex items-center gap-1 px-3">
-                    <span class="hidden sm:inline">Siguiente</span> <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            </div>
-
-            <div class="flex items-center gap-1.5">
-                <button onclick="zoomOut()" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-bold flex items-center justify-center">
-                    <i class="fa-solid fa-minus text-xs"></i>
-                </button>
-                <span id="zoom-level" class="text-[11px] font-bold text-slate-400 w-12 text-center">100%</span>
-                <button onclick="zoomIn()" class="w-8 h-8 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-200 font-bold flex items-center justify-center">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- ÁREA DE RENDERIZADO DEL PDF -->
-        <div class="flex-grow overflow-auto relative bg-slate-950 flex flex-col items-center justify-center" id="pdf-render-area">
-            
-            <!-- Spinner de Carga -->
-            <div id="pdf-loading-spinner" class="flex flex-col items-center gap-3 p-6 text-center">
-                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-brand-orange"></i>
-                <p class="text-xs font-bold text-slate-300">Cargando catálogo en tu tablet...</p>
-                <p class="text-[10px] text-slate-500">Por favor espera un momento mientras se procesa el documento.</p>
-            </div>
-
-            <!-- Canvas donde se dibuja la página para la tablet -->
-            <div class="canvas-container w-full" id="canvas-wrapper">
-                <canvas id="pdf-canvas" class="hidden"></canvas>
-            </div>
-
-            <!-- Mensaje de Fallback si la memoria de la tablet es muy limitada -->
-            <div id="pdf-fallback-box" class="hidden p-8 text-center max-w-md bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl m-4">
-                <i class="fa-solid fa-file-pdf text-5xl text-brand-orange mb-3"></i>
-                <h3 class="text-white font-extrabold text-sm mb-1">Catálogo listo para abrir</h3>
-                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-                    Tu tablet prefiere abrir este archivo de alto peso en su visor de documentos nativo.
-                </p>
-                <a id="fallback-direct-button" target="_blank" class="w-full py-3 bg-brand-orange hover:bg-orange-600 text-white font-extrabold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all">
-                    <i class="fa-solid fa-book-open"></i> Abrir Documento Completo
-                </a>
-            </div>
+        <div class="flex-grow w-full h-full bg-slate-950 relative" id="pdf-container">
+            <!-- El iframe se genera dinámicamente -->
         </div>
     </div>
 
@@ -206,172 +122,33 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT CON LOS 18 ARCHIVOS EXACTOS DE TU CARPETA -->
+    <!-- JAVASCRIPT -->
     <script>
-        // Configuración oficial del Worker de PDF.js
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        // BASE DE DATOS COMPLETA CON LOS 18 NOMBRES EXACTOS DE TU CARPETA
         const CATALOGS_DATABASE = [
-            {
-                id: "cap-duales",
-                filename: "CAP DUALES EM 370-440 MAR 2026.pdf",
-                title: "Lista de Productos Capacitadores Duales EM",
-                company: "Electromecánicos EM",
-                category: "Capacitadores",
-                year: "2026"
-            },
-            {
-                id: "cap-em",
-                filename: "CAP EM P.D 2025-2026.pdf",
-                title: "Lista de Productos Capacitadores EM P.D.",
-                company: "P.D. Representaciones",
-                category: "Capacitadores",
-                year: "2025-2026"
-            },
-            {
-                id: "aquatrece",
-                filename: "Lista de Precios Aquatrece Colombia 2025.pdf",
-                title: "Lista de Productos Aquatrece Colombia",
-                company: "Aquatrece Colombia S.A.S.",
-                category: "Sistemas de Bombeo",
-                year: "2025"
-            },
-            {
-                id: "lista-barnes",
-                filename: "Lista de Precios Barnes.pdf",
-                title: "Lista de Productos Barnes",
-                company: "Barnes de Colombia S.A.S.",
-                category: "Sistemas de Bombeo",
-                year: "2025-2026"
-            },
-            {
-                id: "lista-consorcio",
-                filename: "Lista Productos_ 2024.pdf",
-                title: "Lista de Productos Consorcio",
-                company: "Consorcio Industrial S.A.S.",
-                category: "Equipos & Motores Consorcio",
-                year: "2024"
-            },
-            {
-                id: "lista-energia-potencia",
-                filename: "Lista de Precios Energia y Potencia.pdf",
-                title: "Lista de Productos Energía y Potencia",
-                company: "Energía y Potencia S.A.S.",
-                category: "Motores, Generadores y Maquinaria",
-                year: "2025"
-            },
-            {
-                id: "lista-forte",
-                filename: "catalogo_2025_digital.pdf",
-                title: "Lista de Productos Forte 2025",
-                company: "Global Motor S.A.S.",
-                category: "Maquinaria, Agro & Motores",
-                year: "2025"
-            },
-            {
-                id: "hidroimportacion",
-                filename: "Lista de Precios Hidroimportacion Colombia.pdf",
-                title: "Lista de Productos Hidroimportación Colombia",
-                company: "Hidroimportación Colombia S.A.S.",
-                category: "Sistemas de Bombeo",
-                year: "2025-2026"
-            },
-            {
-                id: "lista-ihm",
-                filename: "Lista de precios IHM.pdf",
-                title: "Lista de Productos IHM 2026",
-                company: "Ignacio Gómez IHM S.A.S.",
-                category: "Sistemas de Bombeo IHM",
-                year: "2026"
-            },
-            {
-                id: "lista-pedrollo",
-                filename: "Lista de Precios Pedrollo.pdf",
-                title: "Lista de Productos Pedrollo",
-                company: "Pedrollo S.p.A. Colombia",
-                category: "Sistemas de Bombeo",
-                year: "2025-2026"
-            },
-            {
-                id: "penagos",
-                filename: "Lista de Precios Penagos.pdf",
-                title: "Lista de Productos Penagos",
-                company: "Penagos Hermanos S.A.S.",
-                category: "Maquinaria Agrícola & Peletizadoras",
-                year: "2025-2026"
-            },
-            {
-                id: "stihl",
-                filename: "Lista de Precios Stihl.pdf",
-                title: "Lista de Productos Stihl",
-                company: "Stihl Colombia S.A.S.",
-                category: "Motosierras, Guadañadoras & Agro",
-                year: "2025-2026"
-            },
-            {
-                id: "lista-trapp",
-                filename: "Lista de Precios Trapp.pdf",
-                title: "Lista de Productos Trapp",
-                company: "Metalúrgica Trapp Ltda.",
-                category: "Jardinería y Picadoras",
-                year: "2025"
-            },
-            {
-                id: "k-seal",
-                filename: "PRECIOS ESPECIALES K SEAL 2025.pdf",
-                title: "Lista de Productos K-Seal",
-                company: "K-Seal International Ltd.",
-                category: "Sellos Mecánicos",
-                year: "2025"
-            },
-            {
-                id: "pac-seal",
-                filename: "PRECIOS SELLOS PAC SEAL OCTUBRE 2025.pdf",
-                title: "Lista de Productos Pac-Seal",
-                company: "Pac-Seal S.A. Industrial",
-                category: "Sellos Mecánicos",
-                year: "2025"
-            },
-            {
-                id: "refrigeracion",
-                filename: "REFRIGERACION Y ELECTRICOS P.D..pdf",
-                title: "Lista de Productos Refrigeración y Eléctricos P.D.",
-                company: "P.D. Refrigeración y Eléctricos S.A.S.",
-                category: "Refrigeración",
-                year: "2025"
-            },
-            {
-                id: "lista-yamaha-motores",
-                filename: "Lista de Productos Yamaha Motores.pdf",
-                title: "Lista de Productos Yamaha Motores",
-                company: "Incolmotores Yamaha S.A.",
-                category: "Motores & Generadores",
-                year: "2026"
-            },
-            {
-                id: "yamaha-repuestos",
-                filename: "Lista de Productos Yamaha Repuestos.pdf",
-                title: "Lista de Productos Yamaha Repuestos",
-                company: "Incolmotores Yamaha S.A.",
-                category: "Repuestos & Accesorios Yamaha",
-                year: "2026"
-            }
+            { id: "cap-duales", filename: "CAP DUALES EM 370-440 MAR 2026.pdf", title: "Lista de Productos Capacitadores Duales EM", company: "Electromecánicos EM", category: "Capacitadores", year: "2026" },
+            { id: "cap-em", filename: "CAP EM P.D 2025-2026.pdf", title: "Lista de Productos Capacitadores EM P.D.", company: "P.D. Representaciones", category: "Capacitadores", year: "2025-2026" },
+            { id: "aquatrece", filename: "Lista de Precios Aquatrece Colombia 2025.pdf", title: "Lista de Productos Aquatrece Colombia", company: "Aquatrece Colombia S.A.S.", category: "Sistemas de Bombeo", year: "2025" },
+            { id: "lista-barnes", filename: "Lista de Precios Barnes.pdf", title: "Lista de Productos Barnes", company: "Barnes de Colombia S.A.S.", category: "Sistemas de Bombeo", year: "2025-2026" },
+            { id: "lista-consorcio", filename: "Lista Productos_ 2024.pdf", title: "Lista de Productos Consorcio", company: "Consorcio Industrial S.A.S.", category: "Equipos & Motores Consorcio", year: "2024" },
+            { id: "lista-energia-potencia", filename: "Lista de Precios Energia y Potencia.pdf", title: "Lista de Productos Energía y Potencia", company: "Energía y Potencia S.A.S.", category: "Motores & Maquinaria", year: "2025" },
+            { id: "lista-forte", filename: "catalogo_2025_digital.pdf", title: "Lista de Productos Forte 2025", company: "Global Motor S.A.S.", category: "Maquinaria & Agro", year: "2025" },
+            { id: "lista-hidroimportacion", filename: "Lista de Precios Hidroimportacion Colombia.pdf", title: "Lista de Productos Hidroimportación Colombia", company: "Hidroimportación Colombia", category: "Sistemas de Bombeo", year: "2026" },
+            { id: "lista-ihm", filename: "Lista de precios IHM.pdf", title: "Lista de Productos IHM 2026", company: "Ignacio Gómez IHM S.A.S.", category: "Sistemas de Bombeo IHM", year: "2026" },
+            { id: "lista-pedrollo", filename: "Lista de Precios Pedrollo.pdf", title: "Lista de Productos Pedrollo", company: "Pedrollo S.p.A. Colombia", category: "Sistemas de Bombeo", year: "2025-2026" },
+            { id: "lista-penagos", filename: "Lista de Precios Penagos.pdf", title: "Lista de Productos Penagos", company: "Penagos Hermanos S.A.", category: "Maquinaria Agrícola", year: "2026" },
+            { id: "lista-stihl", filename: "Lista de Precios Stihl.pdf", title: "Lista de Productos Stihl", company: "Stihl Colombia S.A.S.", category: "Motosierras & Guadañadoras", year: "2026" },
+            { id: "lista-trapp", filename: "Lista de Precios Trapp.pdf", title: "Lista de Productos Trapp", company: "Metalúrgica Trapp Ltda.", category: "Jardinería y Picadoras", year: "2025" },
+            { id: "lista-yamaha-motores", filename: "Lista de Productos Yamaha Motores.pdf", title: "Lista de Productos Yamaha Motores", company: "Incolmotores Yamaha S.A.", category: "Motores & Generadores", year: "2026" },
+            { id: "lista-yamaha-repuestos", filename: "Lista de Productos Yamaha Repuestos.pdf", title: "Lista de Productos Yamaha Repuestos", company: "Incolmotores Yamaha S.A.", category: "Repuestos Originales", year: "2026" },
+            { id: "k-seal", filename: "PRECIOS ESPECIALES K SEAL 2025.pdf", title: "Lista de Productos K-Seal", company: "K-Seal International Ltd.", category: "Sellos Mecánicos", year: "2025" },
+            { id: "pac-seal", filename: "PRECIOS SELLOS PAC SEAL OCTUBRE 2025.pdf", title: "Lista de Productos Pac-Seal", company: "Pac-Seal S.A. Industrial", category: "Sellos Mecánicos", year: "2025" },
+            { id: "refrigeracion", filename: "REFRIGERACION Y ELECTRICOS P.D..pdf", title: "Lista de Productos Refrigeración y Eléctricos P.D.", company: "P.D. Refrigeración y Eléctricos", category: "Refrigeración", year: "2025" }
         ];
 
-        // Ordenar alfabéticamente de la A a la Z por título
         CATALOGS_DATABASE.sort((a, b) => a.title.localeCompare(b.title));
-
         let catalogs = [...CATALOGS_DATABASE];
-        let currentPdfDoc = null;
-        let currentPageNum = 1;
-        let currentScale = 1.2;
-        let isPageRendering = false;
-        let pageNumPending = null;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            renderCatalogsGrid();
-        });
+        window.addEventListener('DOMContentLoaded', () => { renderCatalogsGrid(); });
 
         function renderCatalogsGrid(filtered = catalogs) {
             const grid = document.getElementById('catalogs-grid');
@@ -417,112 +194,21 @@
             document.getElementById('viewer-title').textContent = cat.title;
             document.getElementById('viewer-filename').textContent = cat.filename;
 
-            // Construir URL limpia compatible con servidores y tablets
-            const pdfUrl = encodeURIComponent(cat.filename).replace(/%2F/g, '/');
-            const fullUrl = pdfUrl + '?t=' + Date.now();
+            // Codificación ultra-segura de la URL del PDF
+            const cleanUrl = encodeURIComponent(cat.filename).replace(/%2F/g, '/');
+            const fullUrl = cleanUrl + '?v=' + Date.now();
 
-            // Configurar botones directos
             document.getElementById('btn-direct-link').href = fullUrl;
-            document.getElementById('fallback-direct-button').href = fullUrl;
 
-            // Resetear estados del visor
-            currentPageNum = 1;
-            currentScale = window.innerWidth < 768 ? 0.85 : 1.25;
-            document.getElementById('zoom-level').textContent = Math.round(currentScale * 100) + '%';
-            
-            document.getElementById('pdf-canvas').classList.add('hidden');
-            document.getElementById('pdf-fallback-box').classList.add('hidden');
-            document.getElementById('pdf-loading-spinner').classList.remove('hidden');
+            const container = document.getElementById('pdf-container');
+            container.innerHTML = `<iframe src="${fullUrl}" class="w-full h-full border-0"></iframe>`;
+
             document.getElementById('pdf-viewer-overlay').classList.remove('hidden');
-
-            // Cargar el documento usando PDF.js Engine
-            const loadingTask = pdfjsLib.getDocument({
-                url: fullUrl,
-                cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
-                cMapPacked: true
-            });
-
-            loadingTask.promise.then((pdfDoc) => {
-                currentPdfDoc = pdfDoc;
-                document.getElementById('pdf-loading-spinner').classList.add('hidden');
-                document.getElementById('pdf-canvas').classList.remove('hidden');
-                renderPage(currentPageNum);
-            }).catch((error) => {
-                console.warn('Error cargando con PDF.js en tablet:', error);
-                document.getElementById('pdf-loading-spinner').classList.add('hidden');
-                document.getElementById('pdf-fallback-box').classList.remove('hidden');
-            });
-        }
-
-        function renderPage(num) {
-            isPageRendering = true;
-            currentPdfDoc.getPage(num).then((page) => {
-                const canvas = document.getElementById('pdf-canvas');
-                const ctx = canvas.getContext('2d');
-                const viewport = page.getViewport({ scale: currentScale });
-
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                const renderContext = {
-                    canvasContext: ctx,
-                    viewport: viewport
-                };
-
-                const renderTask = page.render(renderContext);
-                renderTask.promise.then(() => {
-                    isPageRendering = false;
-                    if (pageNumPending !== null) {
-                        renderPage(pageNumPending);
-                        pageNumPending = null;
-                    }
-                });
-            });
-
-            // Actualizar indicador
-            document.getElementById('page-indicator').textContent = `Página ${num} / ${currentPdfDoc.numPages}`;
-        }
-
-        function queueRenderPage(num) {
-            if (isPageRendering) {
-                pageNumPending = num;
-            } else {
-                renderPage(num);
-            }
-        }
-
-        function prevPage() {
-            if (currentPageNum <= 1) return;
-            currentPageNum--;
-            queueRenderPage(currentPageNum);
-        }
-
-        function nextPage() {
-            if (!currentPdfDoc || currentPageNum >= currentPdfDoc.numPages) return;
-            currentPageNum++;
-            queueRenderPage(currentPageNum);
-        }
-
-        function zoomIn() {
-            if (currentScale >= 2.5) return;
-            currentScale += 0.2;
-            document.getElementById('zoom-level').textContent = Math.round(currentScale * 100) + '%';
-            queueRenderPage(currentPageNum);
-        }
-
-        function zoomOut() {
-            if (currentScale <= 0.6) return;
-            currentScale -= 0.2;
-            document.getElementById('zoom-level').textContent = Math.round(currentScale * 100) + '%';
-            queueRenderPage(currentPageNum);
         }
 
         function closePDFViewer() {
             document.getElementById('pdf-viewer-overlay').classList.add('hidden');
-            if (currentPdfDoc) {
-                currentPdfDoc.destroy();
-                currentPdfDoc = null;
-            }
+            document.getElementById('pdf-container').innerHTML = '';
         }
     </script>
 </body>
